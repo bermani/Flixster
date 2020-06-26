@@ -1,10 +1,11 @@
 package com.isaacbfbu.flixster;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 
@@ -21,7 +22,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.Headers;
 
@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String API_URL = "https://api.themoviedb.org/3/movie/%s?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
     public static final String[] ROUTES = {"now_playing","top_rated","upcoming"};
     public static final String TAG = "MainActivity";
+    private static final String SELECTED_TAB_POSITION = "TabPosition";
 
     List<Movie> movies;
 
@@ -74,6 +75,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_TAB_POSITION)) {
+            binding.tabLayout.getTabAt(savedInstanceState.getInt(SELECTED_TAB_POSITION)).select();
+        }
+
         updateMovies();
     }
 
@@ -106,5 +111,11 @@ public class MainActivity extends AppCompatActivity {
                 binding.progressBar.setVisibility(View.GONE);
             }
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(SELECTED_TAB_POSITION, binding.tabLayout.getSelectedTabPosition());
+        super.onSaveInstanceState(outState);
     }
 }
