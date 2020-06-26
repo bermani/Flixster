@@ -31,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
 
     List<Movie> movies;
 
-    RecyclerView rvMovies;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
