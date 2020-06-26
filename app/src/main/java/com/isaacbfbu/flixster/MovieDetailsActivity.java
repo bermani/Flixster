@@ -14,6 +14,7 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.isaacbfbu.flixster.databinding.ActivityMovieDetailsBinding;
 import com.isaacbfbu.flixster.models.Movie;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
@@ -48,7 +49,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
         binding.rbVoteAverage.setRating(voteAverage = voteAverage > 0 ? voteAverage / 2.0f : voteAverage);
 
         Glide.with(this).load(movie.getBackdropPath())
-                .transform(new RoundedCorners(30))
                 .placeholder(R.drawable.flicks_backdrop_placeholder)
                 .into(binding.videoImage);
 
@@ -59,9 +59,12 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 Log.d(TAG, "onSuccess");
                 JSONObject jsonObject = json.jsonObject;
                 try {
-                    JSONObject firstVideo = jsonObject.getJSONArray("results").getJSONObject(0);
-                    final String key = firstVideo.getString("key");
-                    Log.d(TAG, "Got JSON array");
+                    JSONObject video =  getFirstYoutubeVideo(jsonObject.getJSONArray("results"));
+                    if (video == null) {
+                        binding.videoLoading.setVisibility(View.GONE);
+                        return;
+                    }
+                    final String key = video.getString("key");
                     binding.videoImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -87,6 +90,21 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private String getVideosUrl(Integer id) {
         return String.format(VIDEOS_URL, id);
+    }
+
+    private JSONObject getFirstYoutubeVideo(JSONArray results) {
+        JSONObject current;
+        for (int i = 0; i < results.length(); ++i) {
+            try {
+                current = results.getJSONObject(i);
+                if (current.getString("site").equals("YouTube")) {
+                    return current;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     private void startVideoActivity(String key) {
