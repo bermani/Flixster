@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
+import com.google.android.material.tabs.TabLayout;
 import com.isaacbfbu.flixster.adapters.MovieAdapter;
 import com.isaacbfbu.flixster.databinding.ActivityMainBinding;
 import com.isaacbfbu.flixster.models.Movie;
@@ -26,23 +27,28 @@ import okhttp3.Headers;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String NOW_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
+    public static final String API_URL = "https://api.themoviedb.org/3/movie/%s?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
+    public static final String[] ROUTES = {"now_playing","top_rated","upcoming"};
     public static final String TAG = "MainActivity";
 
     List<Movie> movies;
 
+    AsyncHttpClient client;
+    ActivityMainBinding binding;
+    MovieAdapter movieAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        client = new AsyncHttpClient();
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
 
         View view = binding.getRoot();
         setContentView(view);
 
         movies = new ArrayList<>();
         // Create the adapter
-        final MovieAdapter movieAdapter = new MovieAdapter(this, movies);
+        movieAdapter = new MovieAdapter(this, movies);
 
         // Set the adapter on the recycler view
         binding.rvMovies.setAdapter(movieAdapter);
@@ -50,13 +56,38 @@ public class MainActivity extends AppCompatActivity {
         // Set a Layout Manager on the recycler view
         binding.rvMovies.setLayoutManager(new LinearLayoutManager(this));
 
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(NOW_PLAYING_URL, new JsonHttpResponseHandler() {
+        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                updateMovies();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        updateMovies();
+    }
+
+    private void updateMovies() {
+        movies.clear();
+        movieAdapter.notifyDataSetChanged();
+        binding.progressBar.setVisibility(View.VISIBLE);
+        client.get(String.format(API_URL, ROUTES[binding.tabLayout.getSelectedTabPosition()]), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 Log.d(TAG, "onSuccess");
                 JSONObject jsonObject = json.jsonObject;
                 try {
+                    binding.progressBar.setVisibility(View.GONE);
                     JSONArray results = jsonObject.getJSONArray("results");
                     Log.i(TAG, "Results: "+results.toString());
                     movies.addAll(Movie.fromJsonArray(results));
@@ -72,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.d(TAG, "onFailure");
-
+                binding.progressBar.setVisibility(View.GONE);
             }
         });
     }

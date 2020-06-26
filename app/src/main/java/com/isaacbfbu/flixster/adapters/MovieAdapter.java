@@ -18,6 +18,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.isaacbfbu.flixster.MovieDetailsActivity;
 import com.isaacbfbu.flixster.R;
+import com.isaacbfbu.flixster.databinding.ActivityMovieDetailsBinding;
+import com.isaacbfbu.flixster.databinding.ItemMovieBinding;
 import com.isaacbfbu.flixster.models.Movie;
 
 import org.parceler.Parcels;
@@ -61,21 +63,18 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView tvTitle;
-        TextView tvOverview;
-        ImageView ivPoster;
+        ItemMovieBinding binding;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvOverview = itemView.findViewById(R.id.tvOverview);
-            ivPoster = itemView.findViewById(R.id.ivPoster);
+
+            binding = ItemMovieBinding.bind(itemView);
         }
 
         public void bind(Movie movie) {
-            tvTitle.setText(movie.getTitle());
-            tvOverview.setText(movie.getOverview());
+            binding.tvTitle.setText(movie.getTitle());
+            binding.tvOverview.setText(movie.getOverview());
             String imageUrl;
             @DrawableRes int placeholderImage;
 
@@ -87,7 +86,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                 placeholderImage = R.drawable.flicks_movie_placeholder;
             }
 
-            Glide.with(context).load(imageUrl).transform(new RoundedCorners(30)).placeholder(placeholderImage).into(ivPoster);
+            Glide.with(context).load(imageUrl).transform(new RoundedCorners(30)).placeholder(placeholderImage).into(binding.ivPoster);
         }
 
         @Override
