@@ -16,6 +16,7 @@ import okhttp3.Headers;
 public class GlobalState extends Application
 {
     private HashMap<Integer,String> genreMap;
+    private String guestSessionID;
 
     @Override
     public void onCreate() {
@@ -43,9 +44,30 @@ public class GlobalState extends Application
             }
         });
 
+        client.get("https://api.themoviedb.org/3/authentication/guest_session/new?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed", new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                try {
+                    guestSessionID = json.jsonObject.getString("guest_session_id");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    guestSessionID = "";
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                guestSessionID = "";
+            }
+        });
+
     }
 
     public String getGenre(Integer id) {
         return genreMap.get(id);
+    }
+
+    public String getGuestSessionID() {
+        return guestSessionID;
     }
 }

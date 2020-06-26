@@ -3,9 +3,13 @@ package com.isaacbfbu.flixster;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.RatingBar;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.codepath.asynchttpclient.AsyncHttpClient;
@@ -23,16 +27,25 @@ import okhttp3.Headers;
 public class MovieDetailsActivity extends AppCompatActivity {
 
     public static final String VIDEOS_URL = "https://api.themoviedb.org/3/movie/%d/videos?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
+    public static final String RATING_URL = "https://api.themoviedb.org/3/movie/%d/rating?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed&guest_session_id=%s";
     public static final String TAG = "MainActivity";
 
     // the movie to display
     Movie movie;
 
+    // User session ID, stored for rating purposes
+    String sessionID;
+
+    AsyncHttpClient client;
+
+    ActivityMovieDetailsBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        client = new AsyncHttpClient();
 
-        final ActivityMovieDetailsBinding binding = ActivityMovieDetailsBinding.inflate(getLayoutInflater());
+        binding = ActivityMovieDetailsBinding.inflate(getLayoutInflater());
 
         View view = binding.getRoot();
         setContentView(view);
@@ -51,16 +64,24 @@ public class MovieDetailsActivity extends AppCompatActivity {
             genres = genres + gs.getGenre(id) + " ";
         }
 
+        sessionID = gs.getGuestSessionID();
+
         binding.genreField.setText("Genres: " + genres);
 
         float voteAverage = movie.getVoteAverage().floatValue();
         binding.rbVoteAverage.setRating(voteAverage = voteAverage > 0 ? voteAverage / 2.0f : voteAverage);
 
+        binding.rbVoteAverage.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
+                rateMovie(v);
+            }
+        });
+
         Glide.with(this).load(movie.getBackdropPath())
                 .placeholder(R.drawable.flicks_backdrop_placeholder)
                 .into(binding.videoImage);
 
-        AsyncHttpClient client = new AsyncHttpClient();
         client.get(getVideosUrl(movie.getId()), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
@@ -119,5 +140,22 @@ public class MovieDetailsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MovieTrailerActivity.class);
         intent.putExtra("key", key);
         this.startActivity(intent);
+    }
+
+    private void rateMovie(float rating) {
+        if (rating == 0) {
+            rating = 0.25f;
+        }
+        client.post(String.format(RATING_URL, movie.getId(), sessionID), String.format("{\"value\": %f}", rating*2),new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                Toast.makeText(getApplicationContext(), "Your vote was recorded successfully!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Toast.makeText(getApplicationContext(), "There was an error processing your vote", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
