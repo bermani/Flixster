@@ -5,7 +5,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Parcel // annotation indicates class is Parcelable
@@ -18,6 +21,8 @@ public class Movie {
     String overview;
     Double voteAverage;
     Integer id;
+    String releaseDate;
+    ArrayList<Integer> genreIds;
 
     // no-arg, empty constructor required for Parceler
     public Movie() {
@@ -30,6 +35,22 @@ public class Movie {
         overview = jsonObject.getString("overview");
         voteAverage = jsonObject.getDouble("vote_average");
         id = jsonObject.getInt("id");
+
+        releaseDate = jsonObject.getString("release_date");
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM dd, yyyy");
+        try {
+            Date date = inputFormat.parse(releaseDate);
+            releaseDate = outputFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        JSONArray results = jsonObject.getJSONArray("genre_ids");
+        genreIds = new ArrayList<>();
+        for (int i = 0; i < results.length(); ++i) {
+            genreIds.add(results.getInt(i));
+        }
     }
 
     public static List<Movie> fromJsonArray(JSONArray movieJsonArray) throws JSONException {
@@ -62,5 +83,13 @@ public class Movie {
 
     public Integer getId() {
         return id;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public ArrayList<Integer> getGenreIds() {
+        return genreIds;
     }
 }

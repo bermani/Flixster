@@ -3,10 +3,12 @@ package com.isaacbfbu.flixster.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -75,6 +77,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         public void bind(Movie movie) {
             binding.tvTitle.setText(movie.getTitle());
             binding.tvOverview.setText(movie.getOverview());
+ 
             String imageUrl;
             @DrawableRes int placeholderImage;
 

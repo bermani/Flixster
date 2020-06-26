@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     MovieAdapter movieAdapter;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

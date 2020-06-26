@@ -43,6 +43,15 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         binding.tvTitle.setText(movie.getTitle());
         binding.tvOverview.setText(movie.getOverview());
+        binding.releaseDateField.setText("Release Date: " + movie.getReleaseDate());
+
+        GlobalState gs = (GlobalState) getApplication();
+        String genres = "";
+        for (int id : movie.getGenreIds()) {
+            genres = genres + gs.getGenre(id) + " ";
+        }
+
+        binding.genreField.setText("Genres: " + genres);
 
         float voteAverage = movie.getVoteAverage().floatValue();
         binding.rbVoteAverage.setRating(voteAverage = voteAverage > 0 ? voteAverage / 2.0f : voteAverage);

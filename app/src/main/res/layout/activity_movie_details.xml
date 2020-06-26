@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     tools:context=".MovieDetailsActivity">
 
     <ScrollView
@@ -11,7 +11,8 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="57dp">
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="37dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/scrollConstraintLayout"
@@ -45,7 +46,7 @@
 
             <ImageView
                 android:id="@+id/videoImage"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -80,14 +81,31 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="15dp"
                 android:layout_marginEnd="10dp"
                 android:paddingLeft="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/videoImage"
+                app:layout_constraintTop_toBottomOf="@+id/genreField"
                 tools:layout_marginTop="10dp" />
+
+            <TextView
+                android:id="@+id/releaseDateField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Date"
+                app:layout_constraintStart_toStartOf="@+id/genreField"
+                app:layout_constraintTop_toBottomOf="@+id/videoImage" />
+
+            <TextView
+                android:id="@+id/genreField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Genres"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/releaseDateField" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

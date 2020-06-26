@@ -10,7 +10,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name="com.isaacbfbu.flixster.GlobalState">
         <activity android:configChanges="keyboardHidden|orientation|screenSize" android:name=".MovieTrailerActivity"></activity>
         <activity android:name=".MovieDetailsActivity" />
         <activity android:name=".MainActivity">
